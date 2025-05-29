@@ -6,6 +6,6 @@ export default defineConfig({
 
   server: {
     host: true,
-    allowedHosts: ["2c7b-122-186-71-238.ngrok-free.app"],
+    allowedHosts: ["https://bvideo-caller.vercel.app/"],
   },
 });
