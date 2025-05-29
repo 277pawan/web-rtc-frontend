@@ -11,7 +11,6 @@ export const useSocket = () => {
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const socket = useMemo(
     () =>
-      // io("http://localhost:8001", {
       io("https://web-rtc-server-kwkv.onrender.com", {
         transports: ["websocket"], // Force WebSocket only
         withCredentials: true,
