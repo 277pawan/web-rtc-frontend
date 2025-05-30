@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSocket } from "../../context/SocketProvider";
 import ReactPlayer from "react-player";
+import { useNavigate } from "react-router-dom";
 
 function Room() {
   const socket = useSocket();
@@ -10,7 +11,7 @@ function Room() {
     new Map(),
   );
   const peersRef = useRef<Map<string, RTCPeerConnection>>(new Map());
-
+  const navigate = useNavigate();
   // Get local media stream
   const setupLocalStream = useCallback(async () => {
     try {
@@ -22,8 +23,39 @@ function Room() {
       return stream;
     } catch (error) {
       console.error("Error accessing media devices:", error);
+      try {
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: true,
+        });
+        setMyStream(audioStream);
+        return audioStream;
+      } catch (audioError) {
+        console.error("Audio-only fallback failed:", audioError);
+      }
     }
   }, []);
+
+  // FIXED: Proper stream cleanup function
+  const stopLocalStream = useCallback(() => {
+    if (myStream) {
+      // Stop all tracks properly
+      myStream.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`Stopped ${track.kind} track`);
+      });
+      remoteStreams.forEach((stream) => {
+        stream.getTracks().forEach((track) => {
+          track.stop();
+          console.log(`Stopped remote ${track.kind} track`);
+        });
+      });
+      setMyStream(null);
+      setRemoteStreams(null);
+      navigate("/lobby");
+      console.log("Local stream stopped completely");
+    }
+  }, [myStream]);
 
   // Handle user joining room
   const handleUserJoined = useCallback(({ email, id }: any) => {
@@ -274,6 +306,17 @@ function Room() {
     }
   }, [socket]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopLocalStream();
+      peersRef.current.forEach((pc) => {
+        pc.close();
+      });
+      peersRef.current.clear();
+    };
+  }, [stopLocalStream]);
+
   return (
     <div className="p-4 text-white">
       <h1 className="text-2xl font-bold mb-4">Video Chat Room</h1>
@@ -289,13 +332,22 @@ function Room() {
       </div>
 
       {/* Controls */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 flex-wrap">
         {!myStream && (
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
             onClick={setupLocalStream}
           >
             Start Camera
+          </button>
+        )}
+
+        {myStream && (
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            onClick={stopLocalStream}
+          >
+            Exit Call
           </button>
         )}
 
@@ -304,7 +356,7 @@ function Room() {
             {remoteSocketId.map((id) => (
               <button
                 key={id}
-                className="px-4 py-2 bg-green-500 text-white rounded"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                 onClick={() => handleCallUser(id)}
               >
                 Call User ({id.slice(0, 5)}...)
@@ -315,39 +367,76 @@ function Room() {
       </div>
 
       {/* Video streams */}
-      <div className="h-auto overflow-auto flex flex-wrap gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Local stream */}
         {myStream && (
-          <div className="border w-1/3 h-full rounded p-4">
+          <div className="border rounded-lg p-4 bg-gray-800">
             <h2 className="text-lg font-semibold mb-2">My Stream</h2>
-            <ReactPlayer
-              playing
-              muted
-              controls
-              height="300px"
-              width="100%"
-              url={myStream}
-            />
+
+            <div
+              className="relative w-full"
+              style={{ paddingBottom: "56.25%" }}
+            >
+              <ReactPlayer
+                playing
+                muted
+                controls
+                width="100%"
+                height="100%"
+                style={{ position: "absolute", top: 0, left: 0 }}
+                url={myStream}
+                config={{
+                  file: {
+                    attributes: {
+                      playsInline: true, // Important for mobile
+                      webkit_playsinline: true, // iOS Safari
+                    },
+                  },
+                }}
+              />
+            </div>
           </div>
         )}
 
         {/* Remote streams */}
         {remoteStreams.size > 0 &&
           Array.from(remoteStreams.entries()).map(([userId, stream]) => (
-            <div key={userId} className="border w-1/3 h-full rounded p-4">
+            <div key={userId} className="border rounded-lg p-4 bg-gray-800">
               <h2 className="text-lg font-semibold mb-2">
                 Remote Stream ({userId.slice(0, 5)}...)
               </h2>
-              <ReactPlayer
-                playing
-                controls
-                height="300px"
-                width="100%"
-                url={stream}
-              />
+
+              <div
+                className="relative w-full"
+                style={{ paddingBottom: "56.25%" }}
+              >
+                <ReactPlayer
+                  playing
+                  controls
+                  width="100%"
+                  height="100%"
+                  style={{ position: "absolute", top: 0, left: 0 }}
+                  url={stream}
+                  config={{
+                    file: {
+                      attributes: {
+                        playsInline: true, // Important for mobile
+                        webkit_playsinline: true, // iOS Safari
+                      },
+                    },
+                  }}
+                />
+              </div>
             </div>
           ))}
       </div>
+
+      {/* No streams message */}
+      {!myStream && remoteStreams.size === 0 && (
+        <div className="text-center py-8 text-gray-400">
+          <p>Click "Start Camera" to begin video chat</p>
+        </div>
+      )}
     </div>
   );
 }
