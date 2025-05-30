@@ -51,11 +51,11 @@ function Room() {
         });
       });
       setMyStream(null);
-      setRemoteStreams(null);
+      setRemoteStreams(new Map());
       navigate("/lobby");
       console.log("Local stream stopped completely");
     }
-  }, [myStream]);
+  }, [myStream, remoteStreams, navigate]);
 
   // Handle user joining room
   const handleUserJoined = useCallback(({ email, id }: any) => {
@@ -412,7 +412,6 @@ function Room() {
               >
                 <ReactPlayer
                   playing
-                  controls
                   width="100%"
                   height="100%"
                   style={{ position: "absolute", top: 0, left: 0 }}
