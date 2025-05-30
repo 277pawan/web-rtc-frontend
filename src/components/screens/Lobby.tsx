@@ -65,6 +65,7 @@ function Lobby() {
                 id="email"
                 placeholder="enter your email...."
                 className="w-full rounded-md border-gray-200 bg-white p-3 shadow-xs transition focus:border-white focus:ring-3 focus:ring-yellow-400 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                required
               />
             </div>
             <div className="mt-2">
