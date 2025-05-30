@@ -53,7 +53,7 @@ function Lobby() {
             onSubmit={(e) => handleSubmitForm(e)}
             className="sm:flex sm:gap-4"
           >
-            <div className="">
+            <div className="mt-2">
               <label htmlFor="email" className="sr-only">
                 Email
               </label>
@@ -67,7 +67,7 @@ function Lobby() {
                 className="w-full rounded-md border-gray-200 bg-white p-3 shadow-xs transition focus:border-white focus:ring-3 focus:ring-yellow-400 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-white"
               />
             </div>
-            <div>
+            <div className="mt-2">
               <label htmlFor="email" className="sr-only">
                 Room-no.
               </label>
@@ -83,7 +83,7 @@ function Lobby() {
 
             <button
               type="submit"
-              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-rose-600 px-5 py-3 text-white transition focus:ring-3 focus:ring-yellow-400 focus:outline-hidden sm:mt-0 sm:w-auto"
+              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-rose-600 px-5 py-2 text-white transition focus:ring-3 focus:ring-yellow-400 focus:outline-hidden sm:mt-0 sm:w-auto"
             >
               <span className="text-sm font-medium"> Sign Up </span>
 
