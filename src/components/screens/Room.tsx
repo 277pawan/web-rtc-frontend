@@ -13,8 +13,6 @@ function Room() {
     "user" | "environment"
   >("user");
 
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
-
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(
     new Map(),
   );
@@ -41,17 +39,18 @@ function Room() {
     try {
       const constraints: MediaStreamConstraints = {
         audio: true,
-        video: selectedDeviceId
-          ? { deviceId: { exact: selectedDeviceId } }
-          : true,
+        video: {
+          facingMode: selectedFacingMode, // 'user' or 'environment'
+        },
       };
+
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setMyStream(stream);
       return stream;
     } catch (err) {
       console.error("Failed to get media:", err);
     }
-  }, [selectedDeviceId]);
+  }, [selectedFacingMode]);
 
   // FIXED: Proper stream cleanup function
   const stopLocalStream = useCallback(() => {

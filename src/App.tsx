@@ -21,7 +21,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-[#0a0a0a] min-h-screen w-screen overflow-y-auto">
+    <div className="bg-[#0a0a0a] min-h-[100dvh] w-screen overflow-y-auto">
       <AnimatePresence mode="wait">
         {showLanding ? (
           <LandingPage key="landing" />

@@ -39,7 +39,7 @@ function LandingPage() {
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="h-screen w-full flex flex-col place-items-center justify-center items-center bg-black"
+      className="h-[100dvh] w-full flex flex-col place-items-center justify-center items-center bg-black"
     >
       <motion.svg
         width="180"
