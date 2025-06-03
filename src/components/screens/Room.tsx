@@ -398,7 +398,8 @@ function Room() {
       peersRef.current.clear();
     };
   }, []);
-  console.log(remoteSocketId);
+
+  console.log(selectedFacingMode);
   return (
     <div className="p-4 text-white">
       <h1 className="text-2xl font-bold mb-4">Video Chat Room</h1>
@@ -458,7 +459,7 @@ function Room() {
             {/* Video player container */}
             <div className="relative w-full aspect-video mb-4">
               <ReactPlayer
-                key={myStream.id} // Force re-render on camera switch
+                key={selectedFacingMode} // Force re-render on camera switch
                 playing
                 muted
                 controls
