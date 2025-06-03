@@ -7,34 +7,51 @@ function Room() {
   const socket = useSocket();
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
   const [remoteSocketId, setRemoteSocketId] = useState<string[]>([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [cameraOn, setCameraOn] = useState(true);
+  const [selectedFacingMode, setSelectedFacingMode] = useState<
+    "user" | "environment"
+  >("user");
+
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(
     new Map(),
   );
   const peersRef = useRef<Map<string, RTCPeerConnection>>(new Map());
   const navigate = useNavigate();
+
+  const toggleMic = () => {
+    if (!myStream) return;
+    myStream.getAudioTracks().forEach((track) => {
+      track.enabled = !track.enabled;
+    });
+    setIsMuted((prev) => !prev);
+  };
+  const toggleCamera = () => {
+    if (!myStream) return;
+    myStream.getVideoTracks().forEach((track) => {
+      track.enabled = !track.enabled;
+    });
+    setCameraOn((prev) => !prev);
+  };
+
   // Get local media stream
   const setupLocalStream = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const constraints: MediaStreamConstraints = {
         audio: true,
-        video: true,
-      });
+        video: selectedDeviceId
+          ? { deviceId: { exact: selectedDeviceId } }
+          : true,
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setMyStream(stream);
       return stream;
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
-      try {
-        const audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: true,
-        });
-        setMyStream(audioStream);
-        return audioStream;
-      } catch (audioError) {
-        console.error("Audio-only fallback failed:", audioError);
-      }
+    } catch (err) {
+      console.error("Failed to get media:", err);
     }
-  }, []);
+  }, [selectedDeviceId]);
 
   // FIXED: Proper stream cleanup function
   const stopLocalStream = useCallback(() => {
@@ -51,7 +68,7 @@ function Room() {
         });
       });
       setMyStream(null);
-      setRemoteStreams(new Map());
+      setRemoteStreams(null);
       navigate("/lobby");
       console.log("Local stream stopped completely");
     }
@@ -373,10 +390,8 @@ function Room() {
           <div className="border rounded-lg p-4 bg-gray-800">
             <h2 className="text-lg font-semibold mb-2">My Stream</h2>
 
-            <div
-              className="relative w-full"
-              style={{ paddingBottom: "56.25%" }}
-            >
+            {/* Video player container */}
+            <div className="relative w-full aspect-video mb-4">
               <ReactPlayer
                 playing
                 muted
@@ -388,12 +403,45 @@ function Room() {
                 config={{
                   file: {
                     attributes: {
-                      playsInline: true, // Important for mobile
-                      webkit_playsinline: true, // iOS Safari
+                      playsInline: true,
+                      webkitPlaysinline: true,
                     },
                   },
                 }}
               />
+            </div>
+
+            {/* Mic & Camera Controls */}
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={toggleMic}
+                className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-yellow-600 transition"
+              >
+                {isMuted ? "Unmute" : "Mute"}
+              </button>
+              <button
+                onClick={toggleCamera}
+                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
+              >
+                {cameraOn ? "Show Camera" : "Hide Camera"}
+              </button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Select Camera
+              </label>
+              <select
+                className="p-2 rounded text-black"
+                value={selectedFacingMode}
+                onChange={(e) =>
+                  setSelectedFacingMode(
+                    e.target.value as "user" | "environment",
+                  )
+                }
+              >
+                <option value="user">Front Camera</option>
+                <option value="environment">Back Camera</option>
+              </select>
             </div>
           </div>
         )}
