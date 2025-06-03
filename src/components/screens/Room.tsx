@@ -459,7 +459,7 @@ function Room() {
             {/* Video player container */}
             <div className="relative w-full aspect-video mb-4">
               <ReactPlayer
-                key={selectedFacingMode} // Force re-render on camera switch
+                key={myStream.id} // Force re-render on camera switch
                 playing
                 muted
                 controls
@@ -493,11 +493,12 @@ function Room() {
                 {cameraOn ? <Camera /> : <CameraOff />}
               </button>
               <button
-                onClick={() =>
+                onClick={() => {
                   setSelectedFacingMode((prev) =>
                     prev === "user" ? "environment" : "user",
-                  )
-                }
+                  );
+                  switchCamera();
+                }}
                 className="px-4 py-2 bg-emerald-900 text-white rounded hover:bg-emerald-800"
               >
                 <Repeat2 />
