@@ -57,25 +57,46 @@ function Room() {
       const newFacingMode =
         selectedFacingMode === "user" ? "environment" : "user";
 
-      // Get new video track
-      const { videoTrack } = await getCameraTrack(newFacingMode);
+      // Get new video track with selected camera
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newFacingMode },
+      });
+      const newVideoTrack = newStream.getVideoTracks()[0];
 
-      // Replace video track in existing stream
-      const currentVideoTrack = myStream.getVideoTracks()[0];
-      myStream.removeTrack(currentVideoTrack);
-      myStream.addTrack(videoTrack);
-      currentVideoTrack.stop();
+      // Create a new stream with existing audio and new video
+      const combinedStream = new MediaStream([
+        ...myStream.getAudioTracks(),
+        newVideoTrack,
+      ]);
 
-      // Update peer connections
-      updatePeerConnections(videoTrack);
+      // Replace tracks in peer connections
+      peersRef.current.forEach((peer) => {
+        const videoSender = peer
+          .getSenders()
+          .find((s) => s.track?.kind === "video");
+        if (videoSender) {
+          videoSender
+            .replaceTrack(newVideoTrack)
+            .catch((err) => console.error("Failed to replace track:", err));
+        }
+      });
 
-      setSelectedFacingMode(newFacingMode);
-      setMyStream(new MediaStream(myStream.getTracks())); // Trigger re-render
+      // Stop old video track (but keep audio)
+      myStream.getVideoTracks().forEach((track) => track.stop());
+
+      // Stop the temporary stream's audio if it exists
+      newStream.getAudioTracks().forEach((track) => track.stop());
+
+      // Force React to recognize the stream change
+      setMyStream(null); // First set to null
+      setTimeout(() => {
+        setMyStream(combinedStream); // Then set new stream
+        setSelectedFacingMode(newFacingMode);
+      }, 50);
     } catch (err) {
-      console.error("Camera switch failed:", err);
+      console.error("Error switching camera:", err);
     }
   }, [myStream, selectedFacingMode]);
-
   // Helper functions
   const getCameraTrack = async (facingMode: "user" | "environment") => {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -85,6 +106,7 @@ function Room() {
   };
 
   const updatePeerConnections = (videoTrack: MediaStreamTrack) => {
+    console.log(videoTrack);
     peersRef.current.forEach((peer) => {
       const sender = peer.getSenders().find((s) => s.track?.kind === "video");
       if (sender) sender.replaceTrack(videoTrack);
@@ -429,6 +451,7 @@ function Room() {
             {/* Video player container */}
             <div className="relative w-full aspect-video mb-4">
               <ReactPlayer
+                key={selectedFacingMode} // Force re-render on camera switch
                 playing
                 muted
                 controls
@@ -473,6 +496,8 @@ function Room() {
               onChange={(e) => {
                 const newMode = e.target.value as "user" | "environment";
                 if (newMode !== selectedFacingMode) {
+                  console.log("switched the camera");
+                  setSelectedFacingMode(newMode);
                   switchCamera();
                 }
               }}
