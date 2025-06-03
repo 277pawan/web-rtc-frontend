@@ -2,11 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSocket } from "../../context/SocketProvider";
 import ReactPlayer from "react-player";
 import { useNavigate } from "react-router-dom";
+import { Camera, CameraOff, Mic, MicOff, Repeat2 } from "lucide-react";
 
 function Room() {
   const socket = useSocket();
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
-  const [remoteSocketId, setRemoteSocketId] = useState<string[]>([]);
+  const [remoteSocketId, setRemoteSocketId] = useState<
+    { email: string; id: string }[]
+  >([]);
   const [isMuted, setIsMuted] = useState(false);
   const [cameraOn, setCameraOn] = useState(true);
   const [selectedFacingMode, setSelectedFacingMode] = useState<
@@ -136,8 +139,13 @@ function Room() {
 
   // Handle user joining room
   const handleUserJoined = useCallback(({ email, id }: any) => {
-    console.log("User joined the room:", email, id);
-    setRemoteSocketId((prev) => [...prev, id]);
+    setRemoteSocketId((prev) => {
+      // Check if user already exists
+      if (prev.some((user) => user.id === id)) {
+        return prev;
+      }
+      return [...prev, { email, id }];
+    });
   }, []);
 
   // Create or get peer connection
@@ -339,8 +347,7 @@ function Room() {
     socket.on("peer:nego:final", handleNegotiationComplete);
     socket.on("iceCandidate", handleIceCandidate);
     socket.on("roomUsers", (users: string[]) => {
-      console.log("Current users in room:", users);
-      setRemoteSocketId(users);
+      setRemoteSocketId(users.map((user) => ({ email: user, id: user })));
     });
 
     // Clean up event listeners
@@ -391,7 +398,7 @@ function Room() {
       peersRef.current.clear();
     };
   }, []);
-
+  console.log(remoteSocketId);
   return (
     <div className="p-4 text-white">
       <h1 className="text-2xl font-bold mb-4">Video Chat Room</h1>
@@ -428,13 +435,13 @@ function Room() {
 
         {remoteSocketId.length > 0 && myStream && (
           <>
-            {remoteSocketId.map((id) => (
+            {remoteSocketId.map((data) => (
               <button
-                key={id}
+                key={data.id}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                onClick={() => handleCallUser(id)}
+                onClick={() => handleCallUser(data.id)}
               >
-                Call User ({id.slice(0, 5)}...)
+                Call User {data.email}
               </button>
             ))}
           </>
@@ -451,7 +458,7 @@ function Room() {
             {/* Video player container */}
             <div className="relative w-full aspect-video mb-4">
               <ReactPlayer
-                key={selectedFacingMode} // Force re-render on camera switch
+                key={myStream.id} // Force re-render on camera switch
                 playing
                 muted
                 controls
@@ -474,37 +481,27 @@ function Room() {
             <div className="flex gap-2 justify-center">
               <button
                 onClick={toggleMic}
-                className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-yellow-600 transition"
+                className="px-4 py-2 bg-emerald-900 text-black rounded hover:bg-emarld-800 transition"
               >
-                {isMuted ? "Unmute" : "Mute"}
+                {isMuted ? <MicOff color="white" /> : <Mic color="white" />}
               </button>
               <button
                 onClick={toggleCamera}
-                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
+                className="px-4 py-2 bg-emerald-900 text-white rounded hover:bg-emarald-800 transition"
               >
-                {cameraOn ? "Show Camera" : "Hide Camera"}
+                {cameraOn ? <Camera /> : <CameraOff />}
+              </button>
+              <button
+                onClick={() =>
+                  setSelectedFacingMode((prev) =>
+                    prev === "user" ? "environment" : "user",
+                  )
+                }
+                className="px-4 py-2 bg-emerald-900 text-white rounded hover:bg-emerald-800"
+              >
+                <Repeat2 />
               </button>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">
-                Select Camera
-              </label>
-            </div>
-            <select
-              className="p-2 rounded text-black"
-              value={selectedFacingMode}
-              onChange={(e) => {
-                const newMode = e.target.value as "user" | "environment";
-                if (newMode !== selectedFacingMode) {
-                  console.log("switched the camera");
-                  setSelectedFacingMode(newMode);
-                  switchCamera();
-                }
-              }}
-            >
-              <option value="user">Front Camera</option>
-              <option value="environment">Back Camera</option>
-            </select>
           </div>
         )}
 
