@@ -37,12 +37,9 @@ function Room() {
   // Get local media stream
   const setupLocalStream = useCallback(async () => {
     try {
-      console.log(selectedFacingMode);
       const constraints: MediaStreamConstraints = {
         audio: true,
-        video: {
-          facingMode: selectedFacingMode, // 'user' or 'environment'
-        },
+        video: true,
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -51,7 +48,48 @@ function Room() {
     } catch (err) {
       console.error("Failed to get media:", err);
     }
-  }, [selectedFacingMode]);
+  }, []);
+
+  const switchCamera = useCallback(async () => {
+    if (!myStream) return;
+
+    try {
+      const newFacingMode =
+        selectedFacingMode === "user" ? "environment" : "user";
+
+      // Get new video track
+      const { videoTrack } = await getCameraTrack(newFacingMode);
+
+      // Replace video track in existing stream
+      const currentVideoTrack = myStream.getVideoTracks()[0];
+      myStream.removeTrack(currentVideoTrack);
+      myStream.addTrack(videoTrack);
+      currentVideoTrack.stop();
+
+      // Update peer connections
+      updatePeerConnections(videoTrack);
+
+      setSelectedFacingMode(newFacingMode);
+      setMyStream(new MediaStream(myStream.getTracks())); // Trigger re-render
+    } catch (err) {
+      console.error("Camera switch failed:", err);
+    }
+  }, [myStream, selectedFacingMode]);
+
+  // Helper functions
+  const getCameraTrack = async (facingMode: "user" | "environment") => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode },
+    });
+    return { videoTrack: stream.getVideoTracks()[0], stream };
+  };
+
+  const updatePeerConnections = (videoTrack: MediaStreamTrack) => {
+    peersRef.current.forEach((peer) => {
+      const sender = peer.getSenders().find((s) => s.track?.kind === "video");
+      if (sender) sender.replaceTrack(videoTrack);
+    });
+  };
 
   // FIXED: Proper stream cleanup function
   const stopLocalStream = useCallback(() => {
@@ -327,12 +365,10 @@ function Room() {
   useEffect(() => {
     return () => {
       stopLocalStream();
-      peersRef.current.forEach((pc) => {
-        pc.close();
-      });
+      peersRef.current.forEach((pc) => pc.close());
       peersRef.current.clear();
     };
-  }, [stopLocalStream]);
+  }, []);
 
   return (
     <div className="p-4 text-white">
@@ -430,20 +466,20 @@ function Room() {
               <label className="block text-sm font-medium mb-1">
                 Select Camera
               </label>
-              <select
-                className="p-2 rounded text-black"
-                value={selectedFacingMode}
-                onChange={(e) => {
-                  setSelectedFacingMode(
-                    e.target.value as "user" | "environment",
-                  );
-                  setupLocalStream();
-                }}
-              >
-                <option value="user">Front Camera</option>
-                <option value="environment">Back Camera</option>
-              </select>
             </div>
+            <select
+              className="p-2 rounded text-black"
+              value={selectedFacingMode}
+              onChange={(e) => {
+                const newMode = e.target.value as "user" | "environment";
+                if (newMode !== selectedFacingMode) {
+                  switchCamera();
+                }
+              }}
+            >
+              <option value="user">Front Camera</option>
+              <option value="environment">Back Camera</option>
+            </select>
           </div>
         )}
 
