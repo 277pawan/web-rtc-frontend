@@ -37,6 +37,7 @@ function Room() {
   // Get local media stream
   const setupLocalStream = useCallback(async () => {
     try {
+      console.log(selectedFacingMode);
       const constraints: MediaStreamConstraints = {
         audio: true,
         video: {
@@ -432,11 +433,12 @@ function Room() {
               <select
                 className="p-2 rounded text-black"
                 value={selectedFacingMode}
-                onChange={(e) =>
+                onChange={(e) => {
                   setSelectedFacingMode(
                     e.target.value as "user" | "environment",
-                  )
-                }
+                  );
+                  setupLocalStream();
+                }}
               >
                 <option value="user">Front Camera</option>
                 <option value="environment">Back Camera</option>
