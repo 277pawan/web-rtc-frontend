@@ -17,7 +17,7 @@ function Header() {
               <ul className="flex items-center gap-6 text-sm">
                 <li>
                   <Link
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    className="text-background transition dark:text-white dark:hover:text-white/75"
                     to="/"
                   >
                     About
@@ -26,7 +26,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    className="text-background transition dark:text-white dark:hover:text-white/75"
                     href="#"
                   >
                     Streamings
@@ -35,7 +35,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    className="text-background transition dark:text-white dark:hover:text-white/75"
                     href="#"
                   >
                     History
@@ -44,7 +44,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    className="text-background transition dark:text-white dark:hover:text-white/75"
                     href="#"
                   >
                     Services
@@ -53,7 +53,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                    className="text-background transition dark:text-white dark:hover:text-white/75"
                     href="#"
                   >
                     Blog
