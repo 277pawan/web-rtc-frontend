@@ -128,16 +128,13 @@ const LoginPage = () => {
             </div>
 
             {/* Submit Button */}
-            <button
-              onClick={handleSubmit}
-              className="group w-full bg-primary hover:bg-primary-hover text-primary-foreground py-3 px-4 rounded-lg font-medium transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-            >
-              <span>Sign In</span>
+            <AuthButton type="submit" className="w-full">
+              Log In
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
+            </AuthButton>
 
             {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-border">
+            <div className="text-center pt-4">
               <p className="text-muted-foreground">
                 Don't have an account?{" "}
                 <button className="font-medium text-primary hover:text-primary-hover transition-colors duration-200 hover:underline">

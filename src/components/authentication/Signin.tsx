@@ -3,6 +3,7 @@ import { AuthButton } from "../ui/auth-button";
 import { Link } from "react-router-dom";
 import { AuthInput } from "../ui/auth-input";
 import heroImage from "../../assets/Signin.png";
+import { ArrowRight } from "lucide-react";
 const Signin = () => {
   const handleSignIn = () => {
     // Handle sign in logic
@@ -149,6 +150,7 @@ const Signin = () => {
 
             <AuthButton type="submit" className="w-full">
               Create Account
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </AuthButton>
           </form>
 
