@@ -129,7 +129,7 @@ const LoginPage = () => {
 
             {/* Submit Button */}
             <AuthButton type="submit" className="w-full">
-              Log In
+              Log in
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </AuthButton>
 
