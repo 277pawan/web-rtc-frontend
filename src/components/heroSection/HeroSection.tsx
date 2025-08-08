@@ -13,11 +13,11 @@ function HeroSection() {
       {/* LEFT CONTENT */}
       <div className="p-8 md:p-12 lg:px-16 lg:py-24 z-10">
         <div className="max-w-xl text-center md:text-left ltr:sm:text-left rtl:sm:text-right space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-bold text-white dark:text-white">
             Seamless Video Calling: Connect Anytime, Anywhere
           </h2>
 
-          <p className="text-gray-500 dark:text-gray-300">
+          <p className="text-gray-300 dark:text-gray-300">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Et, egestas
             tempus tellus etiam sed. Quam a scelerisque amet ullamcorper eu enim
             et fermentum, augue.
@@ -42,7 +42,7 @@ function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap justify-center items-center md:justify-start gap-3 mt-4"
+            className="flex flex-wrap justify-center items-center md:justify-start gap-3 mt-4 "
           >
             {["High Performance", "Revolutionary", "Progressive"].map(
               (item, idx) => (

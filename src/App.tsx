@@ -8,9 +8,10 @@ import { useLayoutEffect, useState } from "react";
 import LandingPage from "./components/landing/Landing";
 import { AnimatePresence } from "framer-motion";
 import Signin from "./components/authentication/Signin";
+import LoginPage from "./components/authentication/Login";
 
 function App() {
-  const [showLanding, setShowLanding] = useState(true);
+  const [showLanding, setShowLanding] = useState(false);
 
   useLayoutEffect(() => {
     const timeout = setTimeout(() => {
@@ -33,6 +34,7 @@ function App() {
               <Route path="/lobby" element={<Lobby />} />
               <Route path="/room/:roomId" element={<Room />} />
               <Route path="/sign-in" element={<Signin />} />
+              <Route path="/login" element={<LoginPage />} />
             </Routes>
           </div>
         )}
