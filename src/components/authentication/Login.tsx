@@ -1,23 +1,39 @@
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { AuthInput } from "../ui/auth-input";
 import { AuthButton } from "../ui/auth-button";
 import heroImage from "../../assets/Signin.png";
-
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useState } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { ErrorInput } from "../ui/error";
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const controls = useAnimation();
+
+  // Validation schema for Login Form
+  type LoginFormData = z.infer<typeof schema>;
+  const schema = z.object({
+    email: z.email({ message: "Enter a valid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
   });
-  const [focusedField, setFocusedField] = useState("");
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  // form state management
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onBlur",
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const handleSubmit = () => {
-    console.log("Login submitted:", formData);
+  // Submit function for Form
+  const onSubmit: SubmitHandler<LoginFormData> = (data) => {
+    console.log("Login submitted:", data);
   };
 
   return (
@@ -80,59 +96,88 @@ const LoginPage = () => {
             </div>
 
             {/* Email Field */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-background">
-                Email Address
-              </label>
-              <div className="relative group">
-                <AuthInput
-                  id="name"
-                  type="text"
-                  placeholder="abc277@gmail.com"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-background">
-                Password
-              </label>
-              <div className="relative group">
-                <AuthInput
-                  id="name"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-background transition-colors duration-200"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className=" flex flex-col gap-4"
+            >
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-background">
+                  Email Address
+                </label>
+                <div className="relative group">
+                  <AuthInput
+                    id="email"
+                    type="text"
+                    placeholder="abc277@gmail.com"
+                    {...register("email")}
+                  />
+                  {errors.email && (
+                    <ErrorInput message={errors.email.message} />
                   )}
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-background">
+                  Password
+                </label>
+                <div className="relative group">
+                  <AuthInput
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Type your password here..."
+                    {...register("password")}
+                  />
+                  {errors.password && (
+                    <ErrorInput message={errors.password.message} />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-5 transform -translate-y-1/4 text-muted-foreground hover:text-background transition-colors duration-200"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+                <button className="text-sm text-primary hover:text-primary-hover transition-colors duration-200 hover:underline">
+                  Forgot password?
                 </button>
               </div>
-            </div>
 
-            {/* Forgot Password Link */}
-            <div className="flex justify-end">
-              <button className="text-sm text-primary hover:text-primary-hover transition-colors duration-200 hover:underline">
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Submit Button */}
-            <AuthButton type="submit" className="w-full">
-              Log in
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </AuthButton>
-
+              {/* Submit Button */}
+              <AuthButton
+                type="submit"
+                className="w-full"
+                onMouseEnter={() => {
+                  controls.start({
+                    x: [0, 5, 0], // move right by 5px and back
+                    transition: {
+                      repeat: Infinity,
+                      duration: 0.6,
+                      ease: "easeInOut",
+                    },
+                  });
+                }}
+                onMouseLeave={() => {
+                  controls.stop();
+                  controls.start({ x: 0 }); // reset position
+                }}
+              >
+                Log in
+                <motion.div animate={controls}>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                </motion.div>
+              </AuthButton>
+            </form>
             {/* Sign Up Link */}
             <div className="text-center pt-4">
               <p className="text-muted-foreground">
