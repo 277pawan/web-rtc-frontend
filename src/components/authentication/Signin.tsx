@@ -3,28 +3,45 @@ import { AuthButton } from "../ui/auth-button";
 import { Link } from "react-router-dom";
 import { AuthInput } from "../ui/auth-input";
 import heroImage from "../../assets/Signin.png";
-import { ArrowRight } from "lucide-react";
-const Signin = () => {
-  const handleSignIn = () => {
-    // Handle sign in logic
-  };
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ErrorInput } from "../ui/error";
 
-  const handleCreateAccount = () => {
-    // const emailInput = document.querySelector('input[type="email"]');
-    // if (emailInput.checkValidity()) {
-    //   alert("Create account logic placeholder");
-    // } else {
-    //   // Provide feedback to the user that the email is invalid
-    //   alert("Please enter a valid email address.");
-    // }
+import * as z from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useAnimation, motion } from "framer-motion";
+const Signin = () => {
+  const controls = useAnimation();
+
+  // Validation schema for Login Form
+  type SignInFormData = z.infer<typeof schema>;
+  const schema = z.object({
+    name: z.string().min(1, { message: "Username is required" }),
+    email: z.email({ message: "Enter a valid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+  });
+
+  // form state management
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onBlur",
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  // Submit function for Form
+  const onSubmit: SubmitHandler<SignInFormData> = (data) => {
+    console.log("Login submitted:", data);
   };
 
   const handleGoogleSignIn = () => {
     // Handle Google sign in logic
-  };
-
-  const handleFacebookSignIn = () => {
-    // Handle Facebook sign in logic
   };
 
   return (
@@ -88,7 +105,7 @@ const Signin = () => {
           </div>
 
           {/* Signup Form */}
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label
                 htmlFor="name"
@@ -100,8 +117,9 @@ const Signin = () => {
                 id="name"
                 type="text"
                 placeholder="i.e. Davon Lean"
-                required
+                {...register("name")}
               />
+              {errors.name && <ErrorInput message={errors.name.message} />}
             </div>
 
             <div>
@@ -115,23 +133,37 @@ const Signin = () => {
                 id="email"
                 type="email"
                 placeholder="i.e. davon@mail.com"
-                required
+                {...register("email")}
               />
+              {errors.email && <ErrorInput message={errors.email.message} />}
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-auth-foreground mb-2"
-              >
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-background">
                 Password
               </label>
-              <AuthInput
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-              />
+              <div className="relative group">
+                <AuthInput
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Type your password here..."
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <ErrorInput message={errors.password.message} />
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-5 transform -translate-y-1/4 text-muted-foreground hover:text-background transition-colors duration-200"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center space-x-3">
@@ -148,9 +180,29 @@ const Signin = () => {
               </label>
             </div>
 
-            <AuthButton type="submit" className="w-full">
+            {/* Submit Button */}
+            <AuthButton
+              type="submit"
+              className="w-full"
+              onMouseEnter={() => {
+                controls.start({
+                  x: [0, 5, 0], // move right by 5px and back
+                  transition: {
+                    repeat: Infinity,
+                    duration: 0.6,
+                    ease: "easeInOut",
+                  },
+                });
+              }}
+              onMouseLeave={() => {
+                controls.stop();
+                controls.start({ x: 0 }); // reset position
+              }}
+            >
               Create Account
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <motion.div animate={controls}>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </motion.div>
             </AuthButton>
           </form>
 
