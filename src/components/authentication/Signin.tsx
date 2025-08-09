@@ -40,9 +40,10 @@ const Signin = () => {
     console.log("Login submitted:", data);
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign in logic
-  };
+  // TODO to add google login
+  // const handleGoogleSignIn = () => {
+  //   // Handle Google sign in logic
+  // };
 
   return (
     <div className="min-h-[92.9vh] bg-auth-background flex">
