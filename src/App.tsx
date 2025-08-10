@@ -17,7 +17,7 @@ import HeroVisuals from "./components/heroVisuals/heroVisuals";
 import { useLenis } from "./lib/lenis"; // Your custom hook
 
 function App() {
-  // useLenis(); // This call provides global vertical smooth scrolling
+  useLenis(); // This call provides global vertical smooth scrolling
   const [showLanding, setShowLanding] = useState(false); // Changed to true for initial landing
 
   const dummyCards = [
@@ -75,11 +75,11 @@ function App() {
                 element={
                   <>
                     <HeroSection />
-                    <HeroVisuals cards={dummyCards} />{" "}
+                    {/* <HeroVisuals cards={dummyCards} />{" "} */}
                     {/* Horizontal scrolling here */}
-                    <FeatHighlighter />
-                    <Cta />
-                    <Illustration />
+                    {/* <FeatHighlighter /> */}
+                    {/* <Cta /> */}
+                    {/* <Illustration /> */}
                   </>
                 }
               />

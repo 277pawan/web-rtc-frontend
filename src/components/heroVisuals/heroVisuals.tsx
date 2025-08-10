@@ -5,11 +5,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"; // Import ScrollTrigger
 
 gsap.registerPlugin(ScrollTrigger); // Register the ScrollTrigger plugin
 
-type CardType = { content: string };
+type CardType = {
+  id: number;
+  image?: string;
+  description: string;
+  content: string;
+};
 
-function Card({ content }: { content: string }) {
+function Card({ id, content, description }: CardType) {
   return (
     <div
+      key={id}
       style={{
         minWidth: "100vw",
         height: "100vh",
@@ -21,6 +27,8 @@ function Card({ content }: { content: string }) {
       className="bg-red-200"
     >
       {content}
+      <br />
+      <h1 className="text-3xl">{description}</h1>
     </div>
   );
 }
@@ -71,7 +79,7 @@ export default function HeroVisuals({ cards }: { cards: CardType[] }) {
         className="horizontal-scroll-content"
       >
         {cards.map((card, i) => (
-          <Card key={i} content={card.content} />
+          <Card id={i} content={card.content} description={card.description} />
         ))}
       </div>
     </section>
