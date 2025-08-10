@@ -1,23 +1,25 @@
-import "./index.css";
-import Lobby from "./components/screens/Lobby";
+// App.tsx
+import { useLayoutEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import Room from "./components/screens/Room";
+import { AnimatePresence } from "framer-motion"; // If still used elsewhere
+import "./index.css";
 import Header from "./components/navbar/Header";
 import HeroSection from "./components/heroSection/HeroSection";
-import { useLayoutEffect, useState } from "react";
-import LandingPage from "./components/landing/Landing";
-import { AnimatePresence } from "framer-motion";
-import Signin from "./components/authentication/Signin";
-import LoginPage from "./components/authentication/Login";
-import HeroVisuals from "./components/heroVisuals/heroVisuals";
 import FeatHighlighter from "./components/featHighlighter/featHighlighter";
 import Cta from "./components/cta/cta";
 import Illustration from "./components/illustration/illustration";
-import { useLenis } from "./lib/lenis";
+import LandingPage from "./components/landing/Landing";
+import Lobby from "./components/screens/Lobby";
+import Room from "./components/screens/Room";
+import Signin from "./components/authentication/Signin";
+import LoginPage from "./components/authentication/Login";
+import HeroVisuals from "./components/heroVisuals/heroVisuals";
+import { useLenis } from "./lib/lenis"; // Your custom hook
 
 function App() {
-  useLenis();
-  const [showLanding, setShowLanding] = useState(false);
+  // useLenis(); // This call provides global vertical smooth scrolling
+  const [showLanding, setShowLanding] = useState(false); // Changed to true for initial landing
+
   const dummyCards = [
     {
       id: 1,
@@ -50,6 +52,7 @@ function App() {
       description: "End-to-end encryption for your privacy.",
     },
   ];
+
   useLayoutEffect(() => {
     const timeout = setTimeout(() => {
       setShowLanding(false);
@@ -72,7 +75,8 @@ function App() {
                 element={
                   <>
                     <HeroSection />
-                    <HeroVisuals cards={dummyCards} />
+                    <HeroVisuals cards={dummyCards} />{" "}
+                    {/* Horizontal scrolling here */}
                     <FeatHighlighter />
                     <Cta />
                     <Illustration />

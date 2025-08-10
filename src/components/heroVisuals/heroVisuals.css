@@ -1,0 +1,26 @@
+/* Add to your index.css or a dedicated CSS file */
+
+.horizontal-scroll-section {
+  position: relative; /* Needed for pinning */
+  /* Lenis combined with ScrollTrigger for pinning handles scrollbar hiding */
+  /* Do not put overflow: hidden here directly, let ScrollTrigger manage */
+}
+
+.horizontal-scroll-content {
+  display: flex;
+  white-space: nowrap; /* Keeps cards in a single row */
+}
+
+/* Optional: Hide the scrollbar if it appears before pinning */
+/* This might be necessary if Lenis isn't fully initialized on mount */
+.horizontal-scroll-container,
+.horizontal-scroll-content {
+  /* Apply to both wrapper and content */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.horizontal-scroll-container::-webkit-scrollbar,
+.horizontal-scroll-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
