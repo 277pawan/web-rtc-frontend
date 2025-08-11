@@ -1,6 +1,7 @@
 import Lottie from "lottie-react";
 import BirdsFlying from "../../../animation/red birds.json";
 import Dletter from "../../../animation/Alphabet D 3D rotation Lottie JSON animation.json";
+import SocialMedia from "../../../animation/Social media connection video with a mobile on hand.json";
 
 const Card2 = () => {
   return (
@@ -33,6 +34,14 @@ const Card2 = () => {
       </div>
 
       <div className="text-9xl font-extrabold self-end">Get Connect</div>
+      <div className="self-start ml-24">
+        <Lottie
+          animationData={SocialMedia}
+          loop={true}
+          autoplay={true}
+          className="h-96 w-96"
+        />
+      </div>
     </div>
   );
 };
