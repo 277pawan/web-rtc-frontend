@@ -75,9 +75,9 @@ function App() {
                 element={
                   <>
                     <HeroSection />
-                    {/* <HeroVisuals cards={dummyCards} />{" "} */}
+                    <HeroVisuals cards={dummyCards} />{" "}
                     {/* Horizontal scrolling here */}
-                    {/* <FeatHighlighter /> */}
+                    <FeatHighlighter />
                     {/* <Cta /> */}
                     {/* <Illustration /> */}
                   </>

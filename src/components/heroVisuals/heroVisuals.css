@@ -1,5 +1,3 @@
-/* Add to your index.css or a dedicated CSS file */
-
 .horizontal-scroll-section {
   position: relative; /* Needed for pinning */
   /* Lenis combined with ScrollTrigger for pinning handles scrollbar hiding */

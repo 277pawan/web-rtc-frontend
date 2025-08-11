@@ -1,85 +1,65 @@
-// components/heroVisuals/HeroVisuals.tsx
 import { useRef, useEffect } from "react";
-import { gsap } from "gsap"; // Import GSAP
-import { ScrollTrigger } from "gsap/ScrollTrigger"; // Import ScrollTrigger
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Card1, { CardType } from "./components/Card1.tsx";
+import "./heroVisuals.css";
 
-gsap.registerPlugin(ScrollTrigger); // Register the ScrollTrigger plugin
-
-type CardType = {
-  id: number;
-  image?: string;
-  description: string;
-  content: string;
-};
-
-function Card({ id, content, description }: CardType) {
-  return (
-    <div
-      key={id}
-      style={{
-        minWidth: "100vw",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "2rem",
-      }}
-      className="bg-red-200"
-    >
-      {content}
-      <br />
-      <h1 className="text-3xl">{description}</h1>
-    </div>
-  );
-}
+gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroVisuals({ cards }: { cards: CardType[] }) {
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!scrollWrapperRef.current || !scrollContentRef.current) return;
+    const scrollWrapper = scrollWrapperRef.current;
+    const scrollContent = scrollContentRef.current;
 
-    const sections = gsap.utils.toArray(scrollContentRef.current.children); // Get all the individual card elements
-    const totalWidth = sections.length * window.innerWidth; // Calculate total width needed
+    if (!scrollWrapper || !scrollContent) return;
 
-    // Create a horizontal scroll animation using GSAP
-    const horizontalScrollTween = gsap.to(sections, {
-      xPercent: -100 * (sections.length - 1), // Move cards horizontally
-      ease: "none", // Linear movement
+    // Calculate the total horizontal scroll distance
+    const scrollDistance =
+      scrollContent.scrollWidth - scrollWrapper.offsetWidth;
+
+    // Create a GSAP timeline with ScrollTrigger
+    gsap.to(scrollContent, {
+      x: -scrollDistance, // Animate the x position to the left
+      ease: "none",
       scrollTrigger: {
-        trigger: scrollWrapperRef.current, // The element that controls the animation
-        pin: true, // Pin the wrapper to keep it in place during horizontal scroll
-        scrub: 1, // Smoothly link scroll position to animation progress
-        start: "top top", // Start when the top of the trigger hits the top of the viewport
-        end: `+=${totalWidth}`, // End point for the animation
+        trigger: scrollWrapper,
+        pin: true,
+        scrub: 1,
+        // Start the animation when the top of the trigger hits the top of the viewport
+        start: "top top",
+        // The animation ends after the user scrolls a distance equal to the horizontal content width.
+        end: () => `${scrollDistance}`,
       },
     });
 
+    // Clean up function
     return () => {
-      horizontalScrollTween.kill(); // Clean up GSAP animation
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [cards.length]); // Re-run if the number of cards changes
+  }, [cards]);
 
   return (
     <section
-      ref={scrollWrapperRef} // This is the trigger for ScrollTrigger and will be pinned
+      ref={scrollWrapperRef}
       style={{
-        height: "100vh", // Section takes full viewport height
+        height: "100vh", // The component's height determines when the scroll starts
+        position: "relative",
+        overflow: "hidden",
       }}
-      className="horizontal-scroll-section" // Add a class for specific styling
+      className="horizontal-scroll-container"
     >
       <div
-        ref={scrollContentRef} // Contains the horizontally laid-out cards
+        ref={scrollContentRef}
         style={{
           display: "flex",
-          height: "100%",
-          width: `${cards.length * 100}vw`, // Explicit width for horizontal content
+          willChange: "transform",
         }}
-        className="horizontal-scroll-content"
       >
         {cards.map((card, i) => (
-          <Card id={i} content={card.content} description={card.description} />
+          <Card1 key={i} content={card.content} />
         ))}
       </div>
     </section>
