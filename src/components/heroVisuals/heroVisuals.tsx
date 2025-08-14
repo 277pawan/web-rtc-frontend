@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Card1 from "./components/Card1.tsx";
@@ -13,29 +13,24 @@ gsap.registerPlugin(ScrollTrigger);
 export default function HeroVisuals() {
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const cardComponents = [Card1, Card2, Card3, Card4, Card5];
 
   useEffect(() => {
+    if (!scrollWrapperRef.current || !scrollContentRef.current) return;
+
     const scrollWrapper = scrollWrapperRef.current;
     const scrollContent = scrollContentRef.current;
 
-    if (!scrollWrapper || !scrollContent) return;
+    // Calculate scroll distance
+    const scrollDistance =
+      scrollContent.scrollWidth - scrollWrapper.offsetWidth;
 
-    // Function to setup the scroll animation
-    const setupScrollAnimation = () => {
-      // Calculate the total horizontal scroll distance
-      const scrollDistance =
-        scrollContent.scrollWidth - scrollWrapper.offsetWidth;
+    if (scrollDistance <= 0) return;
 
-      // Only proceed if there's actual content to scroll
-      if (scrollDistance <= 0) return;
-
-      // Kill existing ScrollTriggers to avoid conflicts
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-
-      // Create a GSAP timeline with ScrollTrigger
-      gsap.to(scrollContent, {
+    // Create GSAP context
+    const ctx = gsap.context(() => {
+      // Create animation
+      const animation = gsap.to(scrollContent, {
         x: -scrollDistance,
         ease: "none",
         scrollTrigger: {
@@ -43,79 +38,35 @@ export default function HeroVisuals() {
           pin: true,
           scrub: 1,
           start: "top top",
-          end: () => `+=${scrollDistance}`,
-          invalidateOnRefresh: true, // Recalculate on window resize
+          end: `+=${scrollDistance}`,
+          invalidateOnRefresh: true,
         },
       });
+
+      // Ensure ScrollTrigger is refreshed after initial render
+      ScrollTrigger.refresh();
+
+      // Return animation for cleanup
+      return () => {
+        animation.kill(); // Kill the specific animation
+        ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); // Kill all ScrollTriggers
+      };
+    }, scrollWrapperRef);
+
+    return () => {
+      ctx.revert(); // Revert GSAP context
     };
+  }, []);
 
-    // Wait for content to load, then setup animation
-    const timeoutId = setTimeout(() => {
-      setupScrollAnimation();
-      setIsLoaded(true);
-    }, 100);
-
-    // Also setup on window resize
+  // Handle resize events
+  useEffect(() => {
     const handleResize = () => {
-      if (isLoaded) {
-        setupScrollAnimation();
-      }
+      ScrollTrigger.refresh();
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Clean up function
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, [cardComponents, isLoaded]);
-
-  // Additional effect to handle when images/animations are fully loaded
-  useEffect(() => {
-    const scrollContent = scrollContentRef.current;
-    if (!scrollContent || isLoaded) return;
-
-    // Wait for all images and animations to load
-    const images = scrollContent.querySelectorAll("img");
-    const promises = Array.from(images).map((img) => {
-      if (img.complete) return Promise.resolve();
-      return new Promise((resolve) => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-    });
-
-    Promise.all(promises).then(() => {
-      // Additional delay to ensure Lottie animations are ready
-      setTimeout(() => {
-        const scrollWrapper = scrollWrapperRef.current;
-        if (scrollWrapper && scrollContent) {
-          const scrollDistance =
-            scrollContent.scrollWidth - scrollWrapper.offsetWidth;
-
-          if (scrollDistance > 0) {
-            ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-
-            gsap.to(scrollContent, {
-              x: -scrollDistance,
-              ease: "none",
-              scrollTrigger: {
-                trigger: scrollWrapper,
-                pin: true,
-                scrub: 1,
-                start: "top top",
-                end: () => `+=${scrollDistance}`,
-                invalidateOnRefresh: true,
-              },
-            });
-          }
-        }
-        setIsLoaded(true);
-      }, 500);
-    });
-  }, [isLoaded]);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <section
@@ -132,11 +83,19 @@ export default function HeroVisuals() {
         style={{
           display: "flex",
           willChange: "transform",
-          width: `${cardComponents.length * 100}vw`, // Ensure proper width
+          width: `${cardComponents.length * 100}vw`,
+          height: "100%",
         }}
       >
         {cardComponents.map((Card, i) => (
-          <div key={i} style={{ minWidth: "100vw", flexShrink: 0 }}>
+          <div
+            key={`card-${i}`}
+            style={{
+              width: "100vw",
+              height: "100%",
+              flexShrink: 0,
+            }}
+          >
             <Card />
           </div>
         ))}

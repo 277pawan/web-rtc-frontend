@@ -6,6 +6,7 @@
 All colors MUST be HSL.
 */
 body {
+  @apply bg-background text-foreground;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -26,10 +27,10 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 220 9% 15%;
 
-    /* Primary brand colors - Beautiful blue */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 55%;
+    /* Primary brand colors - Updated to #059669 */
+    --primary: 160 92% 31%; /* #059669 */
+    --primary-foreground: 0 0% 100%; /* White, unchanged for contrast */
+    --primary-hover: 160 92% 28%; /* Slightly darker for hover */
 
     /* Secondary colors */
     --secondary: 220 15% 95%;
@@ -37,7 +38,7 @@ body {
 
     /* Muted colors */
     --muted: 220 15% 95%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 220 9% 70%;
 
     /* Accent colors */
     --accent: 220 15% 95%;
@@ -50,7 +51,7 @@ body {
     /* Border and input colors */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --ring: 160 92% 31%; /* Match --primary for focus ring */
 
     /* Border radius */
     --radius: 0.75rem;
@@ -64,19 +65,12 @@ body {
     --auth-muted: 220 10% 60%;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -90,8 +84,10 @@ body {
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary brand colors - Keep #059669 for dark mode or adjust if needed */
+    --primary: 160 92% 31%; /* #059669, same as light mode for consistency */
+    --primary-foreground: 0 0% 100%; /* White, unchanged */
+    --primary-hover: 160 92% 28%; /* Slightly darker for hover */
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -107,7 +103,8 @@ body {
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 160 92% 31%; /* Match --primary for focus ring */
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

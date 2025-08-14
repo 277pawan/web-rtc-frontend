@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import logo from "../../assets/VideoCallLogo.svg";
+
 function Header() {
   return (
     <header className="bg-transparent border-b-2 border-gray-800">
       <div className="mx-auto w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="md:flex md:items-center md:gap-12">
-            <Link className="block text-teal-600 dark:text-teal-600" to="/">
+            <Link className="block text-primary" to="/">
               <span className="sr-only">Home</span>
               <img src={logo} className="h-auto w-8 object-cover" alt="Logo" />
             </Link>
@@ -17,7 +18,7 @@ function Header() {
               <ul className="flex items-center gap-6 text-sm">
                 <li>
                   <Link
-                    className="text-background transition dark:text-white dark:hover:text-white/75"
+                    className="text-muted-foreground transition hover:text-background"
                     to="/"
                   >
                     About
@@ -26,7 +27,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-background transition dark:text-white dark:hover:text-white/75"
+                    className="text-muted-foreground transition hover:text-background"
                     href="#"
                   >
                     Streamings
@@ -35,7 +36,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-background transition dark:text-white dark:hover:text-white/75"
+                    className="text-muted-foreground transition hover:text-background"
                     href="#"
                   >
                     History
@@ -44,7 +45,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-background transition dark:text-white dark:hover:text-white/75"
+                    className="text-muted-foreground transition hover:text-background"
                     href="#"
                   >
                     Services
@@ -53,7 +54,7 @@ function Header() {
 
                 <li>
                   <a
-                    className="text-background transition dark:text-white dark:hover:text-white/75"
+                    className="text-muted-foreground transition hover:text-background"
                     href="#"
                   >
                     Blog
@@ -66,7 +67,7 @@ function Header() {
           <div className="flex items-center gap-4">
             <div className="sm:flex sm:gap-4">
               <Link
-                className="rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm dark:hover:bg-emerald-700"
+                className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover focus:ring-3 focus:ring-ring focus:outline-none"
                 to="/login"
               >
                 Login
@@ -74,7 +75,7 @@ function Header() {
 
               <div className="hidden sm:flex">
                 <Link
-                  className="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 dark:bg-gray-600 dark:text-white dark:hover:text-white/75"
+                  className="rounded-md bg-muted px-5 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-primary hover:text-primary-foreground focus:ring-3 focus:ring-ring focus:outline-none"
                   to="/sign-in"
                 >
                   Register
@@ -83,7 +84,7 @@ function Header() {
             </div>
 
             <div className="block md:hidden">
-              <button className="rounded-sm bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75 dark:bg-gray-800 dark:text-white dark:hover:text-white/75">
+              <button className="rounded-sm bg-muted p-2 text-muted-foreground transition hover:text-foreground">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="size-5"
@@ -106,4 +107,5 @@ function Header() {
     </header>
   );
 }
+
 export default Header;
