@@ -13,6 +13,8 @@ import {
   SignInFormData,
   signInValidation,
 } from "../../validations/signInValidation";
+import { useMutation } from "@tanstack/react-query";
+import { createUser } from "../../api/users";
 const Signin = () => {
   const controls = useAnimation();
 
@@ -20,6 +22,7 @@ const Signin = () => {
   const {
     register,
     handleSubmit,
+    reset: SignInReset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(signInValidation),
@@ -27,8 +30,22 @@ const Signin = () => {
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const {
+    mutate: SignInMutate,
+    isPending,
+    isError,
+    isSuccess,
+    error,
+  } = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      SignInReset();
+    },
+  });
+
   // Submit function for Form
   const onSubmit: SubmitHandler<SignInFormData> = (data) => {
+    SignInMutate(data);
     console.log("Login submitted:", data);
   };
 
@@ -192,7 +209,7 @@ const Signin = () => {
                 controls.start({ x: 0 }); // reset position
               }}
             >
-              Create Account
+              {isPending ? "Creating.." : "Create Account"}
               <motion.div animate={controls}>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </motion.div>
@@ -210,6 +227,12 @@ const Signin = () => {
                 Sign in
               </Link>
             </p>
+            {isSuccess && (
+              <p style={{ color: "green" }}>User added successfully!</p>
+            )}
+            {isError && (
+              <p style={{ color: "red" }}>Error: {(error as Error).message}</p>
+            )}
           </div>
         </div>
       </div>
