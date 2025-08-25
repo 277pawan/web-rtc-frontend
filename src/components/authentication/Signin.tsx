@@ -227,12 +227,6 @@ const Signin = () => {
                 Sign in
               </Link>
             </p>
-            {isSuccess && (
-              <p style={{ color: "green" }}>User added successfully!</p>
-            )}
-            {isError && (
-              <p style={{ color: "red" }}>Error: {(error as Error).message}</p>
-            )}
           </div>
         </div>
       </div>

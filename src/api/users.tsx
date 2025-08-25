@@ -11,7 +11,7 @@ export type NewUser = {
   password: string;
 };
 export const createUser = async (newUser: NewUser) => {
-  const res = await fetch("http://localhost:8000/api/v1/signin", {
+  const res = await fetch("http://localhost:8000/api/v1/signup", {
     method: "POST",
     headers: {
       "content-type": "application/json",
