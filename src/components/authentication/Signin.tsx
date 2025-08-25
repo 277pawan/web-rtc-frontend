@@ -5,24 +5,16 @@ import { AuthInput } from "../ui/auth-input";
 import heroImage from "../../assets/Signin.png";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { ErrorInput } from "../ui/error";
-
-import * as z from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useAnimation, motion } from "framer-motion";
+import {
+  SignInFormData,
+  signInValidation,
+} from "../../validations/signInValidation";
 const Signin = () => {
   const controls = useAnimation();
-
-  // Validation schema for Login Form
-  type SignInFormData = z.infer<typeof schema>;
-  const schema = z.object({
-    name: z.string().min(1, { message: "Username is required" }),
-    email: z.email({ message: "Enter a valid email address" }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
-  });
 
   // form state management
   const {
@@ -30,7 +22,7 @@ const Signin = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(signInValidation),
     mode: "onBlur",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);

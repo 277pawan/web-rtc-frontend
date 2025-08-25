@@ -4,21 +4,17 @@ import { AuthButton } from "../ui/auth-button";
 import heroImage from "../../assets/Signin.png";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { ErrorInput } from "../ui/error";
+import {
+  LoginFormData,
+  loginValidation,
+} from "../../validations/loginValidation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsers } from "../../api/users";
 const LoginPage = () => {
   const controls = useAnimation();
-
-  // Validation schema for Login Form
-  type LoginFormData = z.infer<typeof schema>;
-  const schema = z.object({
-    email: z.email({ message: "Enter a valid email address" }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
-  });
 
   // form state management
   const {
@@ -26,10 +22,24 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(loginValidation),
     mode: "onBlur",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
+
+  if (isLoading) {
+    console.log("it is loading");
+  }
+  if (isError) {
+    console.log("There is error", error);
+  } else {
+    console.log(data);
+  }
 
   // Submit function for Form
   const onSubmit: SubmitHandler<LoginFormData> = (data) => {

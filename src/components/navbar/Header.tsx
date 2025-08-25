@@ -75,7 +75,7 @@ function Header() {
 
               <div className="hidden sm:flex">
                 <Link
-                  className="rounded-md bg-muted px-5 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-primary hover:text-primary-foreground focus:ring-3 focus:ring-ring focus:outline-none"
+                  className="rounded-md bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-primary hover:text-primary-foreground focus:ring-3 focus:ring-ring focus:outline-none"
                   to="/sign-in"
                 >
                   Register

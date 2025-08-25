@@ -14,8 +14,13 @@ import Signin from "./components/authentication/Signin";
 import LoginPage from "./components/authentication/Login";
 import HeroVisuals from "./components/heroVisuals/heroVisuals";
 import { useLenis } from "./lib/lenis";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
+  // implementing tanstack query
+  const queryClient = new QueryClient();
+
+  // Adding Lenis for smooth scroll
   useLenis();
   const [showLanding, setShowLanding] = useState(false);
   const location = useLocation();
@@ -34,27 +39,29 @@ function App() {
         <LandingPage />
       ) : (
         <>
-          <Header />
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <HeroSection />
-                    <motion.div>
-                      <HeroVisuals />
-                    </motion.div>
-                    <FeatHighlighter />
-                  </>
-                }
-              />
-              <Route path="/lobby" element={<Lobby />} />
-              <Route path="/room/:roomId" element={<Room />} />
-              <Route path="/sign-in" element={<Signin />} />
-              <Route path="/login" element={<LoginPage />} />
-            </Routes>
-          </AnimatePresence>
+          <QueryClientProvider client={queryClient}>
+            <Header />
+            <AnimatePresence mode="wait">
+              <Routes location={location} key={location.pathname}>
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <HeroSection />
+                      <motion.div>
+                        <HeroVisuals />
+                      </motion.div>
+                      <FeatHighlighter />
+                    </>
+                  }
+                />
+                <Route path="/lobby" element={<Lobby />} />
+                <Route path="/room/:roomId" element={<Room />} />
+                <Route path="/sign-in" element={<Signin />} />
+                <Route path="/login" element={<LoginPage />} />
+              </Routes>
+            </AnimatePresence>
+          </QueryClientProvider>
         </>
       )}
     </div>
