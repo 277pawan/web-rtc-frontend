@@ -15,6 +15,7 @@ import LoginPage from "./components/authentication/Login";
 import HeroVisuals from "./components/heroVisuals/heroVisuals";
 import { useLenis } from "./lib/lenis";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 
 function App() {
   // implementing tanstack query
@@ -40,6 +41,13 @@ function App() {
       ) : (
         <>
           <QueryClientProvider client={queryClient}>
+            <Toaster
+              position="top-right"
+              richColors
+              visibleToasts={4}
+              theme="system"
+              closeButton
+            />
             <Header />
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>

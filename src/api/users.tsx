@@ -10,6 +10,7 @@ export type NewUser = {
   email: string;
   password: string;
 };
+
 export const createUser = async (newUser: NewUser) => {
   const res = await fetch("http://localhost:8000/api/v1/signup", {
     method: "POST",
@@ -19,8 +20,9 @@ export const createUser = async (newUser: NewUser) => {
     body: JSON.stringify(newUser),
   });
 
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("Faild to create user");
+    throw new Error(data.message || "Failed to create user");
   }
-  return res.json();
+  return data;
 };

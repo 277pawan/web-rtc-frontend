@@ -8,13 +8,14 @@ import { ErrorInput } from "../ui/error";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useAnimation, motion } from "framer-motion";
+import { useAnimation, motion, time } from "framer-motion";
 import {
   SignInFormData,
   signInValidation,
 } from "../../validations/signInValidation";
 import { useMutation } from "@tanstack/react-query";
 import { createUser } from "../../api/users";
+import { toast } from "sonner";
 const Signin = () => {
   const controls = useAnimation();
 
@@ -38,17 +39,19 @@ const Signin = () => {
     error,
   } = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      toast.success(response.message);
       SignInReset();
+    },
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 
   // Submit function for Form
   const onSubmit: SubmitHandler<SignInFormData> = (data) => {
     SignInMutate(data);
-    console.log("Login submitted:", data);
   };
-
   // TODO to add google login
   // const handleGoogleSignIn = () => {
   //   // Handle Google sign in logic
