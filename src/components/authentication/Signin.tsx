@@ -224,7 +224,7 @@ const Signin = () => {
             <p className="text-auth-muted">
               Already have an account?{" "}
               <Link
-                to="/signin"
+                to="/login"
                 className="text-primary hover:underline font-medium"
               >
                 Sign in

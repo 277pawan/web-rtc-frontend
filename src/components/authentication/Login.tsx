@@ -11,8 +11,7 @@ import {
   LoginFormData,
   loginValidation,
 } from "../../validations/loginValidation";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "../../api/users";
+import { Link } from "react-router-dom";
 const LoginPage = () => {
   const controls = useAnimation();
 
@@ -26,20 +25,6 @@ const LoginPage = () => {
     mode: "onBlur",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
-  });
-
-  if (isLoading) {
-    console.log("it is loading");
-  }
-  if (isError) {
-    console.log("There is error", error);
-  } else {
-    console.log(data);
-  }
 
   // Submit function for Form
   const onSubmit: SubmitHandler<LoginFormData> = (data) => {
@@ -193,7 +178,12 @@ const LoginPage = () => {
               <p className="text-muted-foreground">
                 Don't have an account?{" "}
                 <button className="font-medium text-primary hover:text-primary-hover transition-colors duration-200 hover:underline">
-                  Sign up
+                  <Link
+                    to="/sign-in"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Sign up
+                  </Link>
                 </button>
               </p>
             </div>
