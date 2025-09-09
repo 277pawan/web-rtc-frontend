@@ -12,6 +12,9 @@ import {
   loginValidation,
 } from "../../validations/loginValidation";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "../../api/users";
+import { toast } from "sonner";
 const LoginPage = () => {
   const controls = useAnimation();
 
@@ -20,15 +23,27 @@ const LoginPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset: loginReset,
   } = useForm({
     resolver: zodResolver(loginValidation),
     mode: "onBlur",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const { mutate: LogInMutate, isPending } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      loginReset();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
   // Submit function for Form
   const onSubmit: SubmitHandler<LoginFormData> = (data) => {
-    console.log("Login submitted:", data);
+    LogInMutate(data);
   };
 
   return (
@@ -167,7 +182,7 @@ const LoginPage = () => {
                   controls.start({ x: 0 }); // reset position
                 }}
               >
-                Log in
+                {isPending ? "logging..." : "Log in"}
                 <motion.div animate={controls}>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                 </motion.div>

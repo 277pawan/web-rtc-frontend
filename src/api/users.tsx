@@ -11,6 +11,12 @@ export type NewUser = {
   password: string;
 };
 
+export type LoginUser = {
+  email: string;
+  password: string;
+};
+
+// Signin API
 export const createUser = async (newUser: NewUser) => {
   const res = await fetch("http://localhost:8000/api/v1/signup", {
     method: "POST",
@@ -22,7 +28,23 @@ export const createUser = async (newUser: NewUser) => {
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.message || "Failed to create user");
+    throw data;
+  }
+  return data;
+};
+
+// Login API
+export const loginUser = async (loginUser: LoginUser) => {
+  const res = await fetch("http://localhost:8000/api/v1/login", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(loginUser),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw data;
   }
   return data;
 };

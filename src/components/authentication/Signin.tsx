@@ -37,8 +37,17 @@ const Signin = () => {
       toast.success(response.message);
       SignInReset();
     },
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (error) => {
+      if (error.message && typeof error.message === "object") {
+        Object.entries(error.message).forEach(([field, messages]) => {
+          const text = Array.isArray(messages) ? messages.join(",") : messages;
+          console.log(text);
+          toast.error(`${field}:${text}`);
+        });
+      } else {
+        console.log("we are in fallback");
+        toast.error(error.message || "An error occurred.");
+      }
     },
   });
 
