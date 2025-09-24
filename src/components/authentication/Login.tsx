@@ -15,8 +15,10 @@ import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../api/users";
 import { toast } from "sonner";
+import userInfoStore from "../../store/auth/authStore";
 const LoginPage = () => {
   const controls = useAnimation();
+  const userData = userInfoStore((state) => state?.storeUserData);
 
   // form state management
   const {
@@ -35,6 +37,15 @@ const LoginPage = () => {
     onSuccess: (response) => {
       toast.success(response.message);
       loginReset();
+      localStorage.setItem(
+        "accessToken",
+        response?.data?.tokenData?.accessToken,
+      );
+      localStorage.setItem(
+        "refreshToken",
+        response?.data?.tokenData?.refreshToken,
+      );
+      userData(response.data);
     },
     onError: (err) => {
       toast.error(err.message);
