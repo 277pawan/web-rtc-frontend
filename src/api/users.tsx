@@ -15,6 +15,10 @@ export type LoginUser = {
   email: string;
   password: string;
 };
+export type TokenData = {
+  accessToken?: string | null;
+  refreshToken?: string | null;
+};
 
 // Signin API
 export const createUser = async (newUser: NewUser) => {
@@ -41,6 +45,20 @@ export const loginUser = async (loginUser: LoginUser) => {
       "content-type": "application/json",
     },
     body: JSON.stringify(loginUser),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw data;
+  }
+  return data;
+};
+export const refreshData = async (tokenData: TokenData) => {
+  const res = await fetch("http://localhost:8000/api/v1/refreshData", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(tokenData),
   });
   const data = await res.json();
   if (!res.ok) {

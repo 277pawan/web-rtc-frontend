@@ -1,7 +1,31 @@
 import { Link } from "react-router-dom";
 import logo from "../../assets/VideoCallLogo.svg";
+import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { refreshData } from "../../api/users";
+import userInfoStore from "../../store/auth/authStore";
 
 function Header() {
+  const userData = userInfoStore((state) => state?.storeUserData);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") ?? "";
+    refreshMutate({ accessToken });
+  }, []);
+
+  const { mutate: refreshMutate, isPending } = useMutation({
+    mutationFn: refreshData,
+    onSuccess: (response) => {
+      console.log(response.message);
+      userData(response.data);
+    },
+    onError: (err) => {
+      console.error(err.message);
+    },
+  });
+  if (isPending) {
+    console.warn("Data fetching is in process....");
+  }
+
   return (
     <header className="bg-transparent border-b-2 border-gray-800">
       <div className="mx-auto w-screen-xl px-4 sm:px-6 lg:px-8">
