@@ -7,6 +7,8 @@ import userInfoStore from "../../store/auth/authStore";
 
 function Header() {
   const userData = userInfoStore((state) => state?.storeUserData);
+  const userEmail = userInfoStore((state) => state.email);
+  // console.log(userEmail);
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") ?? "";
     refreshMutate({ accessToken });
@@ -16,6 +18,7 @@ function Header() {
     mutationFn: refreshData,
     onSuccess: (response) => {
       console.log(response.message);
+      // console.log(response.data);
       userData(response.data);
     },
     onError: (err) => {
@@ -88,43 +91,47 @@ function Header() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="sm:flex sm:gap-4">
-              <Link
-                className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover focus:ring-3 focus:ring-ring focus:outline-none"
-                to="/login"
-              >
-                Login
-              </Link>
-
-              <div className="hidden sm:flex">
+          {!userEmail ? (
+            <div className="flex items-center gap-4">
+              <div className="sm:flex sm:gap-4">
                 <Link
-                  className="rounded-md bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-primary hover:text-primary-foreground focus:ring-3 focus:ring-ring focus:outline-none"
-                  to="/sign-in"
+                  className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover focus:ring-3 focus:ring-ring focus:outline-none"
+                  to="/login"
                 >
-                  Register
+                  Login
                 </Link>
+
+                <div className="hidden sm:flex">
+                  <Link
+                    className="rounded-md bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-primary hover:text-primary-foreground focus:ring-3 focus:ring-ring focus:outline-none"
+                    to="/sign-in"
+                  >
+                    Register
+                  </Link>
+                </div>
               </div>
             </div>
+          ) : (
+            <p>We have a data</p>
+          )}
 
-            <div className="block md:hidden">
-              <button className="rounded-sm bg-muted p-2 text-muted-foreground transition hover:text-foreground">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="size-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-            </div>
+          <div className="block md:hidden">
+            <button className="rounded-sm bg-muted p-2 text-muted-foreground transition hover:text-foreground">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="size-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
